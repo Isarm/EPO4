@@ -1,4 +1,4 @@
-function [sensorL,sensorR,delay] = SensorDistance
+function [sensorL,sensorR,delay, voltage] = SensorDistance
 %SENSORDISTANCE Summary of this function goes here
 %   Detailed explanation goes here
 tic
@@ -39,5 +39,17 @@ else
    f = errordlg('COMS error')
    sensorR = 'Error';
 end
+
+j = strfind(status,'V_batt');
+if(double(status(j+8)) == 32)
+    voltage = str2double(status(j+7));
+elseif(double(status(j+9)) == 32)
+    voltage = str2double(status([j+7,j+8]));
+elseif(double(status(j+11)) == 32)
+    voltage = str2double(status([j+7,j+8,j+9,j+10]));
+else
+   f = errordlg('COMS error')
+   voltage = 'Error';
 end
 
+end

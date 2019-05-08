@@ -5,13 +5,20 @@ function Challenge1(stopDistance)
 accDelay = 0;
 interMeasurementDelay = 0;
 
-speed = '160';
-s = int2str(speed); 
-signal = ['D',d]; 
-EPOCommunications('transmit',signal);
+
+load('accCurve.mat')
+load('decCurve.mat')
+
+% speed = '160';
+% s = int2str(speed); 
+% signal = ['D',d]; 
+% EPOCommunications('transmit',signal);
+clear speed
+
+initial = 0;
 
 while(1)
-    [sensorL,sensorR,~] = SensorDistance();
+    [sensorL,sensorR,~] = sensorDistanceTest(1);
     sensor = sensorL/2+sensorR/2;
     if(sensor<270)
         break
@@ -20,13 +27,21 @@ end
 
 
 while(1)
-    [sensorL,sensorR,~] = SensorDistance();
+    [sensorL,sensorR,~] = sensorDistanceTest(0);
     sensor = sensorL/2+sensorR/2;
-    x = [x sensor];
+
     
-    if(x(end)-x(end-1)>0) % check if the position has been updated
-        speed = [speed (x(end)-x(end-1))]; % assign speed if this is the case
+    if(initial)    
+        x = [x sensor];
+        if(x(end-1)-x(end)>0) % check if the position has been updated
+            speed = [speed (x(end-1)-x(end))]; % assign speed if this is the case
+        end
+    else
+        x = sensor;
+        initial = 1;
+        speed = 0;
     end
+    
     
     % find this speed in the acceleration curve
     speedIndex = find(accCurve >= speed(end));
@@ -41,7 +56,7 @@ while(1)
     speedIndex = max(speedIndex);
     
     % now plug this 'time' into the decelaration position curve
-    position = decPosCurve(speedIndex);
+    position = decPosCurve(speedIndex) - decPosCurve(end);
     
     % add a safety margin depending on the speed
     position = position + actualSpeed*interMeasurementDelay;
@@ -49,7 +64,7 @@ while(1)
     % add the stopping distance to this position
     position = position + stopDistance;
                
-    if(any(x(end-5:end)<position))
+    if(any(x(1:end)<position))
         EPOCommunications('transmit', 'D150');
         break
     end

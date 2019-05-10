@@ -4,7 +4,12 @@ function challenge1(stopDistance)
 
 accDelay = 0;
 interMeasurementDelay = 0;
-
+clear x;
+clear speed;
+clear position;
+clear sensor
+clear delay 
+delay = [];
 
 load('accCurve159.mat')
 load('decCurve159.mat')
@@ -15,12 +20,11 @@ load('decCurve159.mat')
 EPOCommunications('transmit','M159');
 clear speed
 
-pause(1)
 
 initial = 0;
 
 while(1)
-    [sensorL,sensorR,~] = sensorDistanceTest(1);
+    [sensorL,sensorR,~,~] = sensorDistance1();
     sensor = sensorL/2+sensorR/2;
     if(sensor<270)
         break
@@ -29,57 +33,64 @@ end
 
 
 while(1)
-    [sensorL,sensorR,~] = sensorDistanceTest(0);
-    sensor = sensorL/2+sensorR/2;
+    tic
+    pause(0.2)
+    [sensorL,sensorR,~,~] = sensorDistance1()
+    sensor = sensorL/2+sensorR/2
 
     
     if(initial)    
-        x = [x sensor];
+        x = [x sensor]
         if(x(end-1)-x(end)>0) % check if the position has been updated
-            speed = [speed (x(end-1)-x(end))]; % assign speed if this is the case
+            speed = [speed ((x(end-1)-x(end))/delay)] % assign speed if this is the case
         end
     else
-        x = sensor;
-        initial = 1;
-        speed = 0;
+        x = sensor
+        initial = 1
+        speed = 0
     end
     
     
     % find this speed in the acceleration curve
-    speedIndex = find(accCurve >= speed(end));
+    speedIndex = find(accCurve >= speed(end))
     if isempty(speedIndex)
-        actualSpeed = max(accCurve);
+        actualSpeed = max(accCurve)
     else
-        speedIndex = min(speedIndex);
+        speedIndex = min(speedIndex)
     
         % the real speed will be a certain delay in this curve higher than the 
         % measured speed.
-        actualSpeed = accCurve(speedIndex + accDelay);
+        actualSpeed = accCurve(speedIndex + accDelay)
     end
     
     
     % find this speed in the deceleration curve
-    speedIndex = find(decCurve >= actualSpeed);
+    speedIndex = find(decCurve >= actualSpeed)
     
     if isempty(speedIndex)
-        position = max(decPosCurve) - decPosCurve(end);
+        position = max(decPosCurve) - decPosCurve(end)
     else
-        speedIndex = max(speedIndex);
+        speedIndex = max(speedIndex)
     
         % now plug this 'time' into the decelaration position curve
-        position = decPosCurve(speedIndex) - decPosCurve(end); % compensate for the curve offset.
+        position = decPosCurve(speedIndex) - decPosCurve(end) % compensate for the curve offset.
     end
     
     
     % add a safety margin depending on the speed
-    position = position + actualSpeed*interMeasurementDelay;
+    position = position + actualSpeed*interMeasurementDelay
     
     % add the stopping distance to this position
-    position = position + stopDistance;
+    position = position + stopDistance
                
     if(any(x(1:end)<position))
-        EPOCommunications('transmit', 'D150');
+        EPOCommunications('transmit', 'D150')
         break
+    end
+    if isempty(delay)
+        delay = toc
+    else
+        delay = [delay toc]
     end
 end
 

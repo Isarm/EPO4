@@ -9,16 +9,16 @@ interMeasurementDelay = 0;
 load('accCurve.mat')
 load('decCurve.mat')
 
-% speed = '160';
-% s = int2str(speed); 
-% signal = ['D',d]; 
-% EPOCommunications('transmit',signal);
+speed = '160';
+s = int2str(speed); 
+signal = ['D',d]; 
+EPOCommunications('transmit',signal);
 clear speed
 
 initial = 0;
 
 while(1)
-    [sensorL,sensorR,~] = sensorDistanceTest(1);
+    [sensorL,sensorR,~] = sensorDistance();
     sensor = sensorL/2+sensorR/2;
     if(sensor<270)
         break
@@ -27,7 +27,7 @@ end
 
 
 while(1)
-    [sensorL,sensorR,~] = sensorDistanceTest(0);
+    [sensorL,sensorR,~] = sensorDistance();
     sensor = sensorL/2+sensorR/2;
 
     

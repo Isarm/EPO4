@@ -45,18 +45,29 @@ while(1)
     
     % find this speed in the acceleration curve
     speedIndex = find(accCurve >= speed(end));
-    speedIndex = min(speedIndex);
+    if isempty(speedIndex)
+        actualSpeed = max(accCurve)
+    else
+        speedIndex = min(speedIndex);
     
-    % the real speed will be a certain delay in this curve higher than the 
-    % measured speed.
-    actualSpeed = accCurve(speedIndex + accDelay);
+        % the real speed will be a certain delay in this curve higher than the 
+        % measured speed.
+        actualSpeed = accCurve(speedIndex + accDelay);
+    end
+    
     
     % find this speed in the deceleration curve
     speedIndex = find(decCurve >= actualSpeed);
-    speedIndex = max(speedIndex);
     
-    % now plug this 'time' into the decelaration position curve
-    position = decPosCurve(speedIndex) - decPosCurve(end);
+    if isempty(speedIndex)
+        position = max(decPosCurve) - decPosCurve(end);
+    else
+        speedIndex = max(speedIndex);
+    
+        % now plug this 'time' into the decelaration position curve
+        position = decPosCurve(speedIndex) - decPosCurve(end); % compensate for the curve offset.
+    end
+    
     
     % add a safety margin depending on the speed
     position = position + actualSpeed*interMeasurementDelay;

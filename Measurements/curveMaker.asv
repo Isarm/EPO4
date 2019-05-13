@@ -1,0 +1,11 @@
+Port = '.\\COM8'; %Outgoing COM port 
+result = EPOCommunications('open',Port); %Check the value of result 
+
+while(1)
+    EPOCommunications('transmit','M165');
+    tic
+    [L,R,~,~] = sensorDistance;
+    
+    
+
+result = EPOCommunications('close'); %Check the value of result 

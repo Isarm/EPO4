@@ -9,7 +9,9 @@ clear speed;
 clear position;
 clear sensor
 clear delay 
+clear realdelay
 delay = [];
+realdelay = [];
 
 load('accCurve159.mat')
 load('decCurve159.mat')
@@ -24,9 +26,10 @@ clear speed
 initial = 0;
 
 while(1)
+    tic
     [sensorL,sensorR,~,~] = sensorDistance1();
     sensor = sensorL/2+sensorR/2;
-    if(sensor<270)
+    if(sensor<350)
         break
     end
 end
@@ -34,7 +37,7 @@ end
 
 while(1)
     tic
-    pause(0.2)
+    
     [sensorL,sensorR,~,~] = sensorDistance1()
     sensor = sensorL/2+sensorR/2
 
@@ -42,7 +45,7 @@ while(1)
     if(initial)    
         x = [x sensor]
         if(x(end-1)-x(end)>0) % check if the position has been updated
-            speed = [speed ((x(end-1)-x(end))/delay)] % assign speed if this is the case
+            speed = [speed ((x(end-1)-x(end))/realdelay(end))] % assign speed if this is the case
         end
     else
         x = sensor
@@ -52,11 +55,11 @@ while(1)
     
     
     % find this speed in the acceleration curve
-    speedIndex = find(accCurve >= speed(end))
+    speedIndex = find(accCurve >= speed(end));
     if isempty(speedIndex)
         actualSpeed = max(accCurve)
     else
-        speedIndex = min(speedIndex)
+        speedIndex = min(speedIndex);
     
         % the real speed will be a certain delay in this curve higher than the 
         % measured speed.
@@ -68,9 +71,9 @@ while(1)
     speedIndex = find(decCurve >= actualSpeed)
     
     if isempty(speedIndex)
-        position = max(decPosCurve) - decPosCurve(end)
+        position = max(decPosCurve) - decPosCurve(end);
     else
-        speedIndex = max(speedIndex)
+        speedIndex = max(speedIndex);
     
         % now plug this 'time' into the decelaration position curve
         position = decPosCurve(speedIndex) - decPosCurve(end) % compensate for the curve offset.
@@ -91,6 +94,15 @@ while(1)
         delay = toc
     else
         delay = [delay toc]
+    end
+    if(delay(end)<0.07)
+        pause(0.07 - delay(end))
+    end
+    
+    if isempty(realdelay)
+        realdelay = toc
+    else
+        realdelay = [realdelay toc]
     end
 end
 

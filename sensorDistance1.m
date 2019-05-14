@@ -7,9 +7,12 @@ status = EPOCommunications('transmit','Sd');
 rIndex = find(status == 'R');
 newline = find(status == 10);
 
-sensorL = status(4:newline(1)-1);
-sensorR = status(rIndex+1:newline(2)-1);
-voltage = 0;
+sensorL = str2int(status(4:newline(1)-1));
+sensorR = str2int(status(rIndex+1:newline(2)-1));
+
+status = EPOcommuncations('transmit', 'Sv');
+
+voltage = str2int(status((find(status == 'VBATT')+2):(find(status == 10)-1))) ;
 delay = toc;
 
 end

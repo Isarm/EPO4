@@ -1,22 +1,21 @@
-function [t, x, v] = curvereverse(sensorleft, sensorright, t, first, last)
-    meas_x = (sensorleft + sensorright) ./ 2;
-    meas_x = meas_x - meas_x(1);
-    meas_x = meas_x(first:last);
+function [brake_t, brake_x, brake_v] = curvereverse(decPosCurve, t, first, last)
+    decPosCurve = decPosCurve - decPosCurve(1);
+    decPosCurve = decPosCurve(first:last);
     t = t(first:last);
-    x = meas_x .* -1;
     
-    for k = 2: length(t)
-        t(k) = t(k) + t(k-1);
-    end
+    
+    x = decPosCurve  .* -1;
     L = length(x) - 1;
+    
+    
     % Some data conversion functions need to be included
-    x_delta = x(2:L)- x(1:L-1); 
-    t_delta = t(2:L) - t(1:L-1);
-    v_delta = x_delta ./ t_delta;
+    x_delta = x(2:L) - x(1:L-1);
+    t_delta = t(2:L)- t(1:L-1);
+    v_delta = abs(x_delta ./ t_delta);
     L = length(v_delta);
-    v = [2.1*v_delta(2) - 1.1*v_delta(3),((v_delta(1:L-1)+v_delta(2:L))./ 2), 0]; 
-    x = x(1:length(v));
-    t = t(1:length(t));
+    brake_v = [2.1*v_delta(2) - 1.1*v_delta(3),((v_delta(1:L-1)+v_delta(2:L))./ 2), 0]; 
+    brake_x = x(1:length(brake_v));
+    brake_t = t(1:length(brake_v));
     
 end
 

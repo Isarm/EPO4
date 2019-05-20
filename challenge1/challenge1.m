@@ -27,13 +27,10 @@ debug = 0;
 %     global realdelay
 % end
 
-
-
-
 accDelay = 0;
 % interMeasurementDelay = 0.4;
 
-interMeasurementDelay = 0.37 + (startDistance-300)*0.17/200;
+interMeasurementDelay = 0.405 + (startDistance-300)*0.17/200;
 
 load('accCurve165.mat')
 load('decCurve165.mat')

@@ -1,9 +1,17 @@
-beaconLoc = [1,1];
-N = 4;
-mic = [-3,1;4,1;4,5;1,6];
 
-TDOA = TDOA_gen(beaconLoc,mic,N);
 
-[A,B,beaconLocMeasured] = localization_4(TDOA,transpose(mic));
+mic = [-3,1;4,1;4,5;1,6;1,2];
 
-beaconLocMeasured
+ i = 1;
+ q = 0;
+    for(n=1:4)
+       g=2+q;
+       for(k=g:5)          
+       TDOA_value(i) = TDOA(ref_sig, rec(n), rec(k));
+       g = g+1;
+       i = i+1;
+       end
+       q = q+1;
+    end
+
+[A,B,beaconLocMeasured] = localization_5(TDOA_value,transpose(mic));

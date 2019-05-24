@@ -21,14 +21,10 @@ function [A,b,beaconLocMeas] = localization_4(TDOA,mic)
      end
    b = transpose(b);
    
-%    y = inv(A.'*A)*A.'*b;
+    y = inv(A.'*A)*A.'*b;
    y2 = A\b;
-   beaconLocMeas = y2;
+   beaconLocMeas = y;
 
    
    
 end
-
-    
-
-  

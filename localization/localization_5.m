@@ -16,7 +16,7 @@ function [A,b,beaconLocMeas] = localization_5(TDOA,mic)
      for(n=1:4)
         g=2+q;
         for(k=g:5)          
-        b(i) = (TDOA(i))^2-(norm(mic(n)))^2+(norm(mic(k)))^2;
+        b(i) = (TDOA(i))^2-(norm(mic(:,n)))^2+(norm(mic(:,k)))^2;
         g = g+1;
         i = i+1;
         end
@@ -26,10 +26,4 @@ function [A,b,beaconLocMeas] = localization_5(TDOA,mic)
    
    y = inv(transpose(A)*A)*transpose(A)*b;
    beaconLocMeas = y;
-   
-   
 end
-
-    
-
-  

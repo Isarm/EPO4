@@ -5,7 +5,7 @@
 
 function [h] = ch3(x,y)
 %channel estimation using frequency domain deconvolution
-eps = 0.2;
+
 y= y(:);
 x=x(:);
 Ny = length(y); 
@@ -13,11 +13,11 @@ Nx = length(x);
 L = Ny - Nx + 1; 
 Y = fft([y; zeros(Nx-Ny,1)]); 
 X = fft([x; zeros(Ny - Nx ,1)]); % zero padding to length Ny
-
+eps = 0.04*max(abs(X));
 
 H = Y ./ X; % frequency domain deconvolution 
 ii = find(abs(X)<eps);
-H(ii,:) = 0;
+H(ii) = 0;
 
 %H = H(:,2);
 

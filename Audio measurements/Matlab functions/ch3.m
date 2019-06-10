@@ -13,7 +13,7 @@ Nx = length(x);
 L = Ny - Nx + 1; 
 Y = fft([y; zeros(Nx-Ny,1)]); 
 X = fft([x; zeros(Ny - Nx ,1)]); % zero padding to length Ny
-eps = 0.04*max(abs(X));
+eps = 0.01*max(abs(X));
 
 H = Y ./ X; % frequency domain deconvolution 
 ii = find(abs(X)<eps);

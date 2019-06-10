@@ -1,6 +1,4 @@
 Tr = 0.5;
-
-
 beaconLoc = [0,0];
 mic = [2.3, -2.3; -2.3, -2.3; -2.3, 2.3; 2.3, 2.3; 0, 2.3];
 mic3D = [2.3, -2.3,0.3; -2.3, -2.3,0.3; -2.3, 2.3,0.3; 2.3, 2.3,0.3; 0, 2.3,0.5];
@@ -31,12 +29,7 @@ i = 1;
             i = i+1;
         end
         g = g+1;
-    end
-
-TDOAvIdeal = TDOA_gen(beaconLoc, mic, 5);
-
-loc = gridSearch(TDOAv,mic)
-    
+    end    
 [~,~,beaconLocMeas] = localization_5(340*TDOAv,transpose(mic(1:5,:))) 
 [~,~,beaconLocMeas3D] = localization_5_3D(340*TDOAv,transpose(mic),transpose(mic3D))
         

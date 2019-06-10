@@ -16,7 +16,7 @@ function [T1,T2,dif] = TDOAv2(h1,h2,Tr, Fs)
 low_threshold = 0.3*max(PKS);
 LowPeakIndex = find(PKS<low_threshold);
 
-high_threshold = 0.8*max(PKS);
+high_threshold = 0.8*max(PKS(LowPeakIndex(1):end));
 peakIndex = find(PKS(LowPeakIndex(1):end)>high_threshold);
 
 peakH1 = PKS(LowPeakIndex(1)+ peakIndex(1)-1);

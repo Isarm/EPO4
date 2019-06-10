@@ -28,10 +28,11 @@ while(f < 20000)
     R = ['R',num2str(f)];
     
     EPOCommunications('transmit',F);
-    EPOCommunications('transmit',R)
+    EPOCommunications('transmit',R);
     EPOCommunications('transmit', 'A1');            %% Start Audio Beacon
     pause(0.2)                                      %% Wait a short period before acquiring data
     Acq_data = pa_wavrecord(1,nmics,T_meas*Fs,Fs);  %% Acquire Data
     EPOCommunications('transmit', 'A0');            %% Stop the Audio Beacon
     save([Group '\DataMeas' num2str(f) '.mat']);    %% Save Workspace Data in Folder
+    f = f+200;
 end

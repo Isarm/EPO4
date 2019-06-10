@@ -16,7 +16,7 @@ low_threshold = 0.4*max(PKS);
 LowPeakIndex = find(PKS<low_threshold);
 
 % Search for peaks after the first part of silence
-threshold = 0.9*max(PKS);
+threshold = 0.8*max(PKS(LowPeakIndex(1):end));
 PeakIndex = find(PKS(LowPeakIndex(1):end)>threshold);
 
 % Select the first peak and search for peaks in an interval around it for

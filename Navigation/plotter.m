@@ -1,7 +1,7 @@
 function plotter(x,y,endpointx, endpointy, interx, intery, wall_x, wall_y)
     plot(endpointx, endpointy, 'b-x','Markersize',20 ,'Linewidth', 3)
     hold on
-    plot(interx, intery, 'g-x','Markersize',20 ,'Linewidth', 3)
+    plot(interx, intery, 'g x','Markersize',20 ,'Linewidth', 3)
     xlim([0 460]);
     ylim([0 460]);
     title("Final Challenge")

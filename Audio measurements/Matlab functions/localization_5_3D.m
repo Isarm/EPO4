@@ -1,6 +1,6 @@
 function [A,b,beaconLocMeas] = localization_5_3D(TDOA,mic,mic3D) 
   
-carHeight = 0.2;
+carHeight = 0.28;
     A = [2*transpose(mic(:,2)-mic(:,1)), -2*TDOA(1), 0, 0, 0;
          2*transpose(mic(:,3)-mic(:,1)), 0, -2*TDOA(2), 0, 0;
          2*transpose(mic(:,4)-mic(:,1)), 0, 0, -2*TDOA(3), 0;

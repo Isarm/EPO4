@@ -28,32 +28,32 @@ T1 = locs(PeakIndex(1));
 % Select the first high peak and calculate the time this peak occurs
 threshold = 0.8*max(PKSh1);
 PeakIndexh1 = find(PKSh1>threshold);
-T1 = locsh1(PeakIndexh1(1))+T1-round(Fs*8/340)-1;
-peakH1 = h1(T1);
+T1new = locsh1(PeakIndexh1(1))+T1-round(Fs*8/340)-1;
+peakH1 = h1(T1new);
 threshold = 0.8*max(PKSh2);
 PeakIndexh2 = find(PKSh2>threshold);
-T2 = locsh2(PeakIndexh2(1))+T1-round(Fs*8/340)-1;
-peakH2 = h2(T2);
+T2new = locsh2(PeakIndexh2(1))+T1-round(Fs*8/340)-1;
+peakH2 = h2(T2new);
 
 figure
 subplot(211)
 plot(h1)
 hold on
-plot([T1,T1],[-max(h1),max(h1)],'lineWidth',1)
+plot([T1new,T1new],[-max(h1),max(h1)],'lineWidth',1)
 hold on
 plot([0,length(h1)],[peakH1(1),peakH1(1)],'lineWidth',1);
 axis([T1-round(Fs*8/340),T1+round(Fs*8/340),-max(h1)-0.01,max(h1)+0.01]);
 subplot(212)
 plot(h2)
 hold on
-plot([T2,T2],[-max(h2),max(h2)],'lineWidth',1)
+plot([T2new,T2new],[-max(h2),max(h2)],'lineWidth',1)
 hold on
 plot([0,length(h2)],[peakH2(1),peakH2(1)],'LineWidth',1);
 axis([T1-round(Fs*8/340),T1+round(Fs*8/340),-max(h2)-0.01,max(h2)+0.01]);
 
 % Convert to seconds
-T1 = T1./Fs;
-T2 = T2./Fs;
+T1 = T1new./Fs;
+T2 = T2new./Fs;
 dif = T2-T1;
 end
 

@@ -4,15 +4,16 @@
 
 %% Presets
 nmics = 5;          %% Number of Microphones
-Port = '\\.\COM3';  %% Outgoing COM port
+nmeas = 8;
+Port = '\\.\COM5';  %% Outgoing COM port
 
 
 %% Student Group Data
-Group = 'A11';
-B = 'B32';        %% Bit frequency;           %Standard: B5000
-F = 'F20000';       %% Carrier frequency        %Standard: F10000
-R = 'R16';        %% Repitition Count         %Standard: R2500
-C = 'C0xFFFFFFFF';   %% Audio code               %Standard: C0xaa55aa55
+Group = 'B10';
+B = 'B3000';        %% Bit frequency;           %Standard: B5000
+F = 'F5500';       %% Carrier frequency        %Standard: F10000
+R = 'R2000';        %% Repitition Count         %Standard: R2500
+C = 'C0xD1485066';   %% Audio code               %Standard: C0xaa55aa55
 
 %% Set-up Car
 EPOCommunications('open',Port);
@@ -24,7 +25,7 @@ EPOCommunications('transmit',C);
 %% Set-up Variables
 mkdir(Group)
 Fs = 44100;     %% Sample Rate (44100 is default)
-T_meas = 3;     %% Measurement Time in Seconds
+T_meas = 1;     %% Measurement Time in Seconds
 Acq_data = zeros(T_meas*Fs,nmics);
 
 %% Acquire data

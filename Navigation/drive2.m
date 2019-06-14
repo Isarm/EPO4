@@ -1,84 +1,90 @@
-function drive2(destination, phicarstart)
+function drive2(destination, phicarstart, startx, starty)
+edgetresh =  60;
 r = 50; %Boogstraal van de auto wanneer hij maximaal stuurt in cm
-tolinemargin = 5; %Little safety margin in case the system works to slow
-x_des = linspace(0,400); %This is a line with al the x value that are in the field
-global x y k d m phicar phitogoal dest; 
-dest = destination; 
+%tolinemargin = 5; %Little safety margin in case the system works to slow
+ %This is a line with al the x value that are in the field
+global x y k d z zz phicar phitogoal maxfield m dest;
+dest = destination;
+maxfield = 460;
+z = 0;
+zz = 0;
 x = zeros(1000,1);
+x(1) = startx;
 y = zeros(1000,1);
+y(1) = starty;
 d = zeros(1000,1);
-k = 0; %This is a loop paramater to store the driven directory
+k = 1; %This is a loop paramater to store the driven directory
 m = 1; %This is the loop parameter to indicate the current goal
-updatelocation();
+x_des = linspace(0,maxfield);
+updatelocation(dest(m,1), dest(m,2),0);
 phicar = phicarstart;
-EPOCommunications('transmit', 'M160');
 
-while((m - size(dest,1)) ~= 0)
+while((size(dest,1) - m) ~= 0)
     EPOCommunications('transmit', 'D150')
-    phigoaltosecondgoal = atan2(dest(m,2) - dest(m+1,2), dest(m,1) - dest(m+1,1)); 
-    grade_desired = -tan(phitogoal/2 + phigoaltosecondgoal/2);
-    y_desired = dest(m,2) + grade_desired*(x_des - dest(m,1)); 
-    grade_car = tan(phicar);
-    y_car = y(k) + grade_car * (x_des - x(k)); 
-    x_intersection = polyxpoly(x_des, y_desired, x_des, y_car);
-    y_intersection = dest(m,2) + grade_desired*(x_intersection - dest(m,1));
-    if(phigoaltosecondgoal == pi/2)
-        
-    end
-    if(phigoaltosecondgoal > pi/2)
-        if(r >  sqrt((y_intersection - y(k))^2 + (x_intersection - x(k))^2)) 
-            while(1)
-              radius1_x = x(k) + r * cos(phicar + pi/2);
-              radius1_y = y(k) + r * sin(phicar + pi/2);
-              radius2_x = x(k) + r * cos(phicar - pi/2);
-              radius2_y = y(k) + r * sin(phicar - pi/2);
-              d_radius1 = sqrt((radius1_x - dest(m,1))^2 + (radius1_y - dest(m,2))^2);
-              d_radius2 = sqrt((radius2_x - dest(m,1))^2 + (radius2_y - dest(m,2))^2);
-              if(d_radius1 < d_radius2) 
-                  toline = abs(-grade_desired * radius1_x + radius1_y + dest(m,1) * grade_desired - dest(m,2))/ sqrt(grade_desired^2 + 1);
-              else
-                  toline = abs(-grade_desired * radius1_x + radius1_y + dest(m,1) * grade_desired - dest(m,2))/ sqrt(grade_desired^2 + 1);
-              end
-              updatelocation();
-              if(toline + tolinemargin > r)
-                  break;
-              end
+    phitosecond = angle3points(x(k), y(k), dest(m+1,1), dest(m+1,2), dest(m,1), dest(m,2));
+    %        refline = phitosecond /2 + phigoaltosecondgoal(x(k), y(k), maxfield, dest(m,2), dest(m,1), dest(m,2));
+    phigoaltosecondgoal = atan2(dest(m+1,2) - dest(m,2), dest(m+1,1) - dest(m,1));
+    phimiddlecarsecondgoal = phigoaltosecondgoal/2 + phitogoal/2;
+    A = [abs(phigoaltosecondgoal - phimiddlecarsecondgoal + pi), abs(phigoaltosecondgoal - phimiddlecarsecondgoal), abs(phigoaltosecondgoal - phimiddlecarsecondgoal - pi) ; (phigoaltosecondgoal - phimiddlecarsecondgoal + pi) ,(phigoaltosecondgoal - phimiddlecarsecondgoal),(phigoaltosecondgoal - phimiddlecarsecondgoal - pi)]; 
+    [~,c] = min(A(1,:));
+    refline = A(2,c);
+    if(phitosecond > pi/2)
+        if(y(k) > dest(m,1))
+          refline = -refline;
+        end
+        grade_desired = tan(refline);
+        if(grade_desired > 10^-10 && grade_desired < 10^10)
+            y_desired = dest(m,2) + grade_desired*(x_des - dest(m,1)); 
+            grade_car = tan(phicar);
+            y_car = y(k) + grade_car * (x_des - x(k)); 
+            x_intersection = polyxpoly(x_des, y_desired, x_des, y_car);
+            if ~isempty(x_intersection)
+                y_intersection = dest(m,2) + grade_desired*(x_intersection - dest(m,1));    
+                if(edgetresh < x_intersection && x_intersection < (maxfield - edgetresh) && edgetresh < y_intersection && y_intersection < (maxfield - edgetresh))
+                    drive(x_intersection, y_intersection)
+                end
             end
-       elseif(phigoaltosecondgoal < pi/2) %Note that the box of the last challenge can be on one of this radii and then you're screwed so you must be able to find a way past that in some way.
-            if(d > 3*r)
-                r3radius1_x =  dest(m,1) + 3 * r * cos(phigoaltosecondgoal + pi/2);
-                r3radius1_y =  dest(m,2) + 3 * r * sin(phigoaltosecondgoal + pi/2);
-                r3radius2_x =  dest(m,1) + 3 * r * cos(phigoaltosecondgoal - pi/2);
-                r3radius2_y =  dest(m,2) + 3 * r * sin(phigoaltosecondgoal - pi/2);
+        end
+        drive(dest(m,1),dest(m,2));
+    elseif(phitosecond <= pi/2) %Note that the box of the last challenge can be on one of this radii and then you're screwed so you must be able to find a way past that in some way.
+        if(d(k) > 3*r)
+            refline = -refline; %NOTE: Is alleen goed in enkel geval
+                r3radius1_x =  dest(m,1) + 3 * r * cos(refline + pi/2);
+                r3radius1_y =  dest(m,2) + 3 * r * sin(refline + pi/2);
+                r3radius2_x =  dest(m,1) + 3 * r * cos(refline - pi/2);
+                r3radius2_y =  dest(m,2) + 3 * r * sin(refline - pi/2);
                 d_3_radius1 = sqrt((r3radius1_x - x(k))^2 + (r3radius1_y - y(k))^2);
                 d_3_radius2 = sqrt((r3radius2_x - x(k))^2 + (r3radius2_y - y(k))^2);
-                if(d_3_radius1 < d_3_radius2)
-                    drive() %Has to drive to radius 1.
-                else
-                    drive() %Has to drive to radius 2.
+                if(d_3_radius1 < d_3_radius2 && edgetresh < r3radius1_x && r3radius1_x < (maxfield - edgetresh) && edgetresh < r3radius1_y && r3radius1_y < (maxfield - edgetresh) )  
+                    drive(r3radius1_x, r3radius1_y) %Has to drive to radius 1.
+                    updatelocation(dest(m,1),dest(m,2),0);
+                elseif(edgetresh < r3radius2_x && r3radius2_x < (maxfield - edgetresh) && edgetresh < r3radius2_y && r3radius2_y < (maxfield - edgetresh))
+                    drive(r3radius2_x, r3radius2_y) %Has to drive to radius 2.
+                    updatelocation(dest(m,1),dest(m,2),0);
                 end
-            end
-            if(d > 1.5*r)
-                r1_5radius1_x =  dest(m,1) + 1.5 * r * cos(phigoaltosecondgoal + pi/2);
-                r1_5radius1_y =  dest(m,2) + 1.5 * r * sin(phigoaltosecondgoal + pi/2);
-                r1_5radius2_x =  dest(m,1) + 1.5 * r * cos(phigoaltosecondgoal - pi/2);
-                r1_5radius2_y =  dest(m,2) + 1.5 * r * sin(phigoaltosecondgoal - pi/2);
+        end
+        if(d(k) > 1.5*r)
+                r1_5radius1_x =  dest(m,1) + 1.5 * r * cos(refline + pi/2);
+                r1_5radius1_y =  dest(m,2) + 1.5 * r * sin(refline + pi/2);
+                r1_5radius2_x =  dest(m,1) + 1.5 * r * cos(refline - pi/2);
+                r1_5radius2_y =  dest(m,2) + 1.5 * r * sin(refline - pi/2);
                 d_1_5_radius1 = sqrt((r1_5radius1_x - x(k))^2 + (r1_5radius1_y - y(k))^2);
                 d_1_5_radius2 = sqrt((r1_5radius2_x - x(k))^2 + (r1_5radius2_y - y(k))^2);
-                if(d_1_5_radius1 < d_1_5_radius2)
-                    drive() %Has to drive to radius 1.
-                else
-                    drive() %Has to drive to radius 2.
+                if(d_1_5_radius1 < d_1_5_radius2 && edgetresh < r1_5radius1_x && r1_5radius1_x < maxfield - edgetresh && edgetresh < r1_5radius1_y && r1_5radius1_y < (maxfield - edgetresh))
+                    drive(r1_5radius1_x, r1_5radius1_y) %Has to drive to radius 1
+                elseif(edgetresh < r1_5radius2_x && r1_5radius2_x < (maxfield - edgetresh) && edgetresh < r1_5radius2_y && r1_5radius2_y < (maxfield - edgetresh))
+                    drive(r1_5radius2_x, r1_5radius2_y) %Has to drive to radius 2.
                 end
-            end
-       end
-    drive()
-    while (w==0)
-    w = waitforbuttonpress;
+        end
     end
+    drive(dest(m,1), dest(m,2))
+    disp('Intermediate goal is reached')
+    disp('Press Enter to continue')
+    input('')
     m = m + 1;
 end
-drive(); %This is the drive to the finish
+drive(dest(m,1), dest(m,2)); %This is the drive to the finish
+disp('Reached Final Destination')
 end
 
 %{

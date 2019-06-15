@@ -13,12 +13,12 @@ for(i=1:5)
     h3(:,i) = ch3(refsignal(refsignalStart(i):refsignalStart(i)+lengthV(i),i),Acq_data(:,i),eps(i));
 end
 
-for(i=1:5)
-    subplot(5,1,i)
-    plot(h3(:,i));
-    axis([1.6e4 8e4 -max(h3(:,i)) max(h3(:,i))])
-end
-figure
+% for(i=1:5)
+%     subplot(5,1,i)
+%     plot(h3(:,i));
+%     axis([1.6e4 8e4 -max(h3(:,i)) max(h3(:,i))])
+% end
+% figure
 
 g=2;
 i = 1;
@@ -31,7 +31,7 @@ i = 1;
         end
         g = g+1;
     end    
-[~,~,beaconLocMeas] = localization_5(340*TDOAv,transpose(mic(1:5,:))) 
-[~,~,beaconLocMeas3D] = localization_5_3D(340*TDOAv,transpose(mic),transpose(mic3D))
+% [~,~,beaconLocMeas] = localization_5(343*TDOAv,transpose(mic(1:5,:))) 
+[~,~,beaconLocMeas3D] = localization_5_3D(343*TDOAv,transpose(mic),transpose(mic3D))
         
  

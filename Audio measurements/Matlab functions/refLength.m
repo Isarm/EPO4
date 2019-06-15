@@ -1,8 +1,12 @@
-eps = 1;
+eps = 1.2;
 micc = 5;
 length = 382;
 increment = 3;
 offset = 0;
+
+%4-12-3000
+lengthV = [389 390 410 403 412];
+eps = [0.115 0.08 0.2 0.125 0.12];
 
 % 4-12-2500
 eps1 = 1;
@@ -24,11 +28,11 @@ while(length<10000)
     ii = 1;
     refsignalStopTest = refsignalStart(micc) + length;
     for(ii = 1:8)
-        load(['C:\Users\Isar Meijer\OneDrive - student.tudelft.nl\Studie\EPO4\Audio measurements\4-12-2500-C0xD1485066\DataMeas' num2str(ii) '.mat']);
+        load(['C:\Users\Isar Meijer\OneDrive - student.tudelft.nl\Studie\EPO4\Audio measurements\4-12-3000-standard-mid(12345)\DataMeas' num2str(ii) '.mat']);
         h3 = [h3 ch3(refsignal(refsignalStart(micc)+offset:refsignalStopTest,micc),Acq_data(:,micc),eps)];
         subplot(3,3,ii);
         plot(h3(:,ii));
-        axis([15000 30000 -0.01 0.01]);
+        axis([10000 50000 -0.01 0.01]);
         subplot(339)
         plot(refsignal(refsignalStart(micc):refsignalStopTest,micc));
         

@@ -1,5 +1,4 @@
 Tr = 0.5;
-beaconLoc = [0,0];
 mic = [2.3, -2.3; -2.3, -2.3; -2.3, 2.3; 2.3, 2.3; 0, 2.3];
 mic3D = [2.3, -2.3,0.5; -2.3, -2.3,0.5; -2.3, 2.3,0.5; 2.3, 2.3,0.5; 0, 2.3,0.8];
 
@@ -9,7 +8,7 @@ for(i=1:5)
     % generate the channel estimations
     % replace with own channel estimations
     % h2(:,i) = ch2(refsignal(refsignalStart(i):refsignalStop(i),i),Acq_data(:,i),length(Acq_data(:,i)));
-    h3(:,i) = ch3(refsignal(refsignalStart:refsignalStop),Acq_data(:,i));
+    h3(:,i) = ch3(refsignal(refsignalStart:refsignalStart+length),Acq_data(:,i),eps);
 end
 
 for(i=1:5)
@@ -25,7 +24,7 @@ i = 1;
         for(k=g:5)
             % generate the TDOA vector (replace TDOA with your own function
             % and store each TDOA in TDOAv(i)
-            [~,~,TDOAv(i)] = TDOAv2(h3(:,n),h3(:,k),Tr,Fs);
+            [~,~,TDOAv(i)] = TDOA(h3(:,n),h3(:,k),Tr,Fs);
             i = i+1;
         end
         g = g+1;

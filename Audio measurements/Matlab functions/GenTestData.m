@@ -4,14 +4,14 @@
 
 %% Presets
 nmics = 5;          %% Number of Microphones
-nmeas = 8;
+nmeas = 1;
 Port = '\\.\COM5';  %% Outgoing COM port
 
 
 %% Student Group Data
 Group = 'B10';
-B = 'B3000';        %% Bit frequency;           %Standard: B5000
-F = 'F5500';       %% Carrier frequency        %Standard: F10000
+B = 'B4000';        %% Bit frequency;           %Standard: B5000
+F = 'F12000';       %% Carrier frequency        %Standard: F10000
 R = 'R2000';        %% Repitition Count         %Standard: R2500
 C = 'C0xD1485066';   %% Audio code               %Standard: C0xaa55aa55
 

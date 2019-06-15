@@ -35,5 +35,9 @@ i = 1;
    b = transpose(b);
    
    y = inv(transpose(A)*A)*transpose(A)*b;
-   beaconLocMeas = y;
+   if(any(isnan(y)))
+       [~,~,beaconLocMeas] = localization_5_3D(TDOA+0.00001,mic,transpose(mic3D));
+   else
+        beaconLocMeas = y;
+   end
 end

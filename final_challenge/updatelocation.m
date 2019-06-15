@@ -15,7 +15,7 @@ Max_try = 3; %Maximum tries before the error will be accepted.
 error_read = zeros(Max_try , 4);
 
 %Gathering new x(k) and y(k)
-if(q == 1)
+if(q ~= 0)
     k = k + 1; 
 while(1) %Sometimes only another target is chosen. Therefore the code can update the values to the new target and use q = 0 for that
     Acq_data = pa_wavrecord(1,nmics,T_meas*Fs,Fs);
@@ -49,7 +49,7 @@ while(1) %Sometimes only another target is chosen. Therefore the code can update
     break
     end
 end
-if(k ~= 1) 
+if(k ~= 1 && q == 2) 
     phicar = atan2((y(k) - y(k-1)), (x(k) - x(k - 1))); %Angle of the direction of the car with x-axis on 0 rad
 end
 end

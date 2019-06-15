@@ -1,6 +1,8 @@
 function drive(goalx, goaly)
 global d k phicar phitogoal z zz; 
 test = 0;
+hardturn = 0.20; %In rad
+softturn = 0.5 * hardturn; %In rad
 updatelocation(goalx, goaly,0);
 while(d(k) > 30)
     %Correct steering - if you don't correct steering the car may choose to
@@ -28,19 +30,28 @@ while(d(k) > 30)
     else
         if 0.15 < phi && phi < 0.35  %~5 graden  Minimale angle voordat ie gaat sturen
             EPOCommunications('transmit','D170')
+            q = 2;
+            phicar = phicar + softturn;
         elseif phi > 0.35 % ~20 graden
             EPOCommunications('transmit','D200')
+            q = 2;
+            phicar = phicar + hardturn;
         elseif  -0.15 > phi && phi > -0.35 %Minimale angle voordat ie gaat sturen
             EPOCommunications('transmit','D130') 
+            q = 2;
+            phicar = phicar + softturn;
         elseif phi < -0.35 %Minimale angle voordat ie gaat sturen
-            EPOCommunications('transmit','D100') 
+            EPOCommunications('transmit','D100')
+            phicar = phicar + hardturn;
+            q = 2;
         else
             EPOCommunications('transmit','D150')
+            q = 1;
         end
         EPOCommunications('transmit','M160')
         pause(0.5)
         EPOCommunications('transmit','M150')
     end
-    updatelocation(goalx, goaly,1)
+    updatelocation(goalx, goaly,q)
 end
 end

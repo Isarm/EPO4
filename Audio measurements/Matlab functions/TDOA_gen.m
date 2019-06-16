@@ -1,4 +1,5 @@
-function [TDOA] = TDOA_gen(beaconLoc, mic,N)
+function [TDOA] = TDOA_gen(beaconLoc, mic)
+% this function generates ideal (3D) TDOA pairs.
     v = 340;
 g=2;
 i = 1;

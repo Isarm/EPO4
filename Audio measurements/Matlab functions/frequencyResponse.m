@@ -1,5 +1,6 @@
 f = 500;
 i = 1;
+clear x;
 while(f < 16500)
     load(['C:\Users\Isar Meijer\OneDrive - student.tudelft.nl\Studie\EPO4\Audio measurements\frequencyResponse2\DataMeas' num2str(f) '.mat']);
     
@@ -14,5 +15,5 @@ while(f < 16500)
     f = f+500;
     i = i+1;
 end
-figure
-plot(x,log(fr));
+
+plot(x,fr);

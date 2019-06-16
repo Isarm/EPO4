@@ -1,3 +1,6 @@
+% script for testing the (xyz) 3d model versus the (xy) 3d model
+
+
 N = 100;
 v = 343;
 mic = [2.3, -2.3; -2.3, -2.3; -2.3, 2.3; 2.3, 2.3; 0, 2.3];
@@ -7,7 +10,7 @@ for(xc = 1:N)
     xc
     for(yc = 1:N)
         beaconLoc = [xc*4.6/N-2.3,yc*4.6/N-2.3,0.28];
-        TDOA3D = TDOA_gen3D(beaconLoc,mic3D,5);
+        TDOA3D = TDOA_gen3D(beaconLoc,mic3D);
         % select a random number between 1 and ten
         k = ceil(rand(1)*10);
         

@@ -8,7 +8,7 @@ for(i=1:5)
     % generate the channel estimations
     % replace with own channel estimations
     % h2(:,i) = ch2(refsignal(refsignalStart(i):refsignalStop(i),i),Acq_data(:,i),length(Acq_data(:,i)));
-    h3(:,i) = ch3(refsignal(refsignalStart:refsignalStart+length),Acq_data(:,i),eps);
+    h3(:,i) = ch3(refsignal(refsignalStart:refsignalStart+lengthV),Acq_data(:,i),eps);
 end
 
 for(i=1:5)
@@ -29,7 +29,7 @@ i = 1;
         end
         g = g+1;
     end    
-[~,~,beaconLocMeas] = localization_5(340*TDOAv,transpose(mic(1:5,:))) 
-[~,~,beaconLocMeas3D] = localization_5_3D(340*TDOAv,transpose(mic),transpose(mic3D))
+% [~,~,beaconLocMeas] = localization_5(343*TDOAv,transpose(mic(1:5,:))) 
+[~,~,beaconLocMeas3D] = localization_5_3D(343*TDOAv,transpose(mic),transpose(mic3D))
         
  

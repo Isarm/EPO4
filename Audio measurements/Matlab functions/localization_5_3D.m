@@ -1,5 +1,8 @@
 function [A,b,beaconLocMeas] = localization_5_3D(TDOA,mic,mic3D) 
-  
+
+% This function generates the x,y coordinates of the audio beacon from a
+% set of TDOA pairs. A and b can be read out for debugging purposes.
+
 carHeight = 0.28;
     A = [2*transpose(mic(:,2)-mic(:,1)), -2*TDOA(1), 0, 0, 0;
          2*transpose(mic(:,3)-mic(:,1)), 0, -2*TDOA(2), 0, 0;
@@ -35,6 +38,11 @@ i = 1;
    b = transpose(b);
    
    y = inv(transpose(A)*A)*transpose(A)*b;
+   
+   % In symmetry positions it could happen that some TDOA pairs are 0, this
+   % could lead to invertible matrices. The following recursion adds a
+   % small value to the TDOA pairs and reruns the function. Some accuracy
+   % is lost in this process
    if(any(isnan(y)))
        [~,~,beaconLocMeas] = localization_5_3D(TDOA+0.00001,mic,transpose(mic3D));
    else

@@ -1,3 +1,5 @@
+% script for testing the effects of a deviation in the speed of sound
+
 N = 1000;
 v = 0.01*343+343;
 mic = [2.3, -2.3; -2.3, -2.3; -2.3, 2.3; 2.3, 2.3; 0, 2.3];
@@ -7,7 +9,7 @@ for(xc = 1:N)
     xc
     for(yc = 1:N)
         beaconLoc = [xc*4.6/N-2.3,yc*4.6/N-2.3,0.28];
-        TDOA3D = TDOA_gen3D(beaconLoc,mic3D,5);
+        TDOA3D = TDOA_gen3D(beaconLoc,mic3D);
 
         [~,~,loc3dV] = localization_5_3D(TDOA3D*v,transpose(mic),transpose(mic3D));
 %         [~,~,loc3dV2] = localization_5_3D(TDOA3D*v2,transpose(mic),transpose(mic3D));

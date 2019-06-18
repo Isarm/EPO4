@@ -5,10 +5,28 @@ Fs = 48000;
 mic = [2.3, -2.3; -2.3, -2.3; -2.3, 2.3; 2.3, 2.3; 0, 2.3];
 mic3D = [2.3, -2.3,0.5; -2.3, -2.3,0.5; -2.3, 2.3,0.5; 2.3, 2.3,0.5; 0, 2.3,0.8];
 nmics = 5;
-T_meas = 2*1000/4000;  
 o = 0; 
 n = 0;
+if playrec('isInitialised')
+    playrec('reset');
+end
+devs = playrec('getDevices');
+for id=1:size(devs,2)
+    if(strcmp('ASIO4ALL v2',devs(id).name))
+        break;
+    end
+end
+devId=devs(id).deviceID;
+%% initialization
+Fs = 48000;
+N = 9600; % # samples (records 100ms)
+maxChannel = 5;% # mics
 
+playrec('init', Fs, -1, devId);
+
+if ~playrec('isInitialised')
+    error ('Failed to initialise device at any sample rate');
+end
 location_error_in_error = 10; %Maxium allowed distance if multiple measurements are done
 dist_between_points = 40; %Maximum allowed distance between two measured points allowed (after driving)
 Max_try = 5; %Maximum tries before the error will be accepted.
@@ -19,8 +37,14 @@ if(q ~= 0)
     k = k + 1; 
 while(1) %Sometimes only another target is chosen. Therefore the code can update the values to the new target and use q = 0 for that
     tic
-    Acq_data = pa_wavrecord(1,nmics,T_meas*Fs,Fs);
-    toc1 = [toc1 toc];
+    page=playrec('rec',N, 1 : maxChannel); % start recording in 
+                                           % a new buffer page
+    while(~playrec('isFinished')) % Wait till recording is done 
+                             %(can also be done by turning on the block option)
+    end
+    y = double(playrec('getRec',page)); % get the data
+
+    playrec('delPage');    toc1 = [toc1 toc];
     [x(k), y(k)] = localization_driving(refsignal, refsignalStart,lengthV,Tr, Fs,mic,mic3D,Acq_data, eps);
     toc2 = [toc2 toc];
     x(k) = x(k) * 100 + 230;
@@ -53,6 +77,7 @@ while(1) %Sometimes only another target is chosen. Therefore the code can update
     break
     end
 end
+playrec('reset')
 if(k ~= 1 && q == 2) 
     phicar(k) = atan2((y(k) - y(k-1)), (x(k) - x(k - 1))); %Angle of the direction of the car with x-axis on 0 rad
 end

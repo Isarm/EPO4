@@ -24,7 +24,6 @@ x_des = linspace(0,maxfield);
 updatelocation(dest(m,1), dest(m,2),0);
 phicar(k) = phicarstart;
 
-
 %% Student Group Data
 Group = 'B10';
 B = 'B4000';        %% Bit frequency;           %Standard: B5000
@@ -50,7 +49,6 @@ while((size(dest,1) - m) ~= 0)
     A = [abs(phigoaltosecondgoal - phimiddlecarsecondgoal + pi), abs(phigoaltosecondgoal - phimiddlecarsecondgoal), abs(phigoaltosecondgoal - phimiddlecarsecondgoal - pi) ; (phigoaltosecondgoal - phimiddlecarsecondgoal + pi) ,(phigoaltosecondgoal - phimiddlecarsecondgoal),(phigoaltosecondgoal - phimiddlecarsecondgoal - pi)]; 
     [~,c] = min(A(1,:));
     refline = A(2,c);
-    %Acq_data = pa_wavrecord(1,nmics,T_meas*Fs,Fs);
     if(phitosecond > pi/2)
         if(y(k) > dest(m,1))
           refline = -refline;

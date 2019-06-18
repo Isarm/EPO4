@@ -76,14 +76,14 @@ while(1) %Sometimes only another target is chosen. Therefore the code can update
              errd(t) = sqrt((avgerrx - error_read(t,1))^2 + (avgerry - error_read(t,2))^2);
          end
          [~,omitrow] = max(errd);
-         error_read(omitrow,:) = 0;
+         error_read(omitrow,:) = [];
          avgerrx =  sum(error_read(:,1)) / 4;
          avgerry =  sum(error_read(:,2)) / 4;
          for t = 1:5
              errd(t) = sqrt((avgerrx - error_read(t,1))^2 + (avgerry - error_read(t,2))^2);
          end
          [~,omitrow] = max(errd);
-         error_read(omitrow,:) = 0;
+         error_read(omitrow,:) = [];
          x(k) = sum(error_read(:,1)) / 3;
          y(k) = sum(error_read(:,2)) / 3;
          clear error_read o 

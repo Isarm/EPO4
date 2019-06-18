@@ -1,4 +1,5 @@
 function varargout = matlabgui(varargin)
+global x y k d phicar phitogoal maxfield dest m refsignal refsignalStart lengthV eps;
 %MATLABGUI MATLAB code file for matlabgui.fig
 %      MATLABGUI, by itself, creates a new MATLABGUI or raises the existing
 %      singleton*.
@@ -22,7 +23,7 @@ function varargout = matlabgui(varargin)
 
 % Edit the above text to modify the response to help matlabgui
 
-% Last Modified by GUIDE v2.5 14-Jun-2019 09:27:28
+% Last Modified by GUIDE v2.5 18-Jun-2019 09:55:37
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;

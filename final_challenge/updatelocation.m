@@ -1,26 +1,29 @@
 function updatelocation(goalx, goaly, q)
-global x y k d phicar phitogoal maxfield dest m refsignal refsignalStart lengthV eps;
+global toc1 toc2 x y k d phicar phitogoal maxfield dest m refsignal refsignalStart lengthV eps;
 Tr = 0.5;
 Fs = 48000;
 mic = [2.3, -2.3; -2.3, -2.3; -2.3, 2.3; 2.3, 2.3; 0, 2.3];
 mic3D = [2.3, -2.3,0.5; -2.3, -2.3,0.5; -2.3, 2.3,0.5; 2.3, 2.3,0.5; 0, 2.3,0.8];
 nmics = 5;
-T_meas = 3;  
+T_meas = 2*1000/4000;  
 o = 0; 
 n = 0;
 
-location_error_in_error = 5; %Maxium allowed distance if multiple measurements are done
-dist_between_points = 30; %Maximum allowed distance between two measured points allowed (after driving)
-Max_try = 3; %Maximum tries before the error will be accepted.
+location_error_in_error = 10; %Maxium allowed distance if multiple measurements are done
+dist_between_points = 40; %Maximum allowed distance between two measured points allowed (after driving)
+Max_try = 5; %Maximum tries before the error will be accepted.
 error_read = zeros(Max_try , 4);
 
 %Gathering new x(k) and y(k)
 if(q ~= 0)
     k = k + 1; 
 while(1) %Sometimes only another target is chosen. Therefore the code can update the values to the new target and use q = 0 for that
+    tic
     Acq_data = pa_wavrecord(1,nmics,T_meas*Fs,Fs);
+    toc1 = [toc1 toc];
     [x(k), y(k)] = localization_driving(refsignal, refsignalStart,lengthV,Tr, Fs,mic,mic3D,Acq_data, eps);
-    x(k) = x(k) * 100 +230;
+    toc2 = [toc2 toc];
+    x(k) = x(k) * 100 + 230;
     y(k) = y(k) * 100 + 230;
     if(0 > x(k) || maxfield < x(k) ||  0 > y(k) || maxfield < y(k))
         n = n + 1;
@@ -34,6 +37,7 @@ while(1) %Sometimes only another target is chosen. Therefore the code can update
     end
     dx = x(k) - x(k-1);
     dy = y(k) - y(k-1);
+    
     if(dist_between_points < sqrt(dx^2+dy^2))
         o= o+ 1;
         error_read(m,1) = x(k); error_read(m,2) = y(k);
@@ -50,7 +54,7 @@ while(1) %Sometimes only another target is chosen. Therefore the code can update
     end
 end
 if(k ~= 1 && q == 2) 
-    phicar = atan2((y(k) - y(k-1)), (x(k) - x(k - 1))); %Angle of the direction of the car with x-axis on 0 rad
+    phicar(k) = atan2((y(k) - y(k-1)), (x(k) - x(k - 1))); %Angle of the direction of the car with x-axis on 0 rad
 end
 end
 
@@ -58,7 +62,7 @@ end
 deltax = goalx - x(k);
 deltay = goaly - y(k);
 d(k) = sqrt((x(k) - goalx)^2 + (y(k) - goaly)^2);
-phitogoal = atan2(deltay, deltax); %Angle from car to goal with x-axis 0 rad
+phitogoal(k) = atan2(deltay, deltax); %Angle from car to goal with x-axis 0 rad
 wall_x = 0;
 wall_y = 0;
 

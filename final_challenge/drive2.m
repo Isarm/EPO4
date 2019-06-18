@@ -3,7 +3,8 @@ edgetresh =  60;
 r = 50; %Boogstraal van de auto wanneer hij maximaal stuurt in cm
 %tolinemargin = 5; %Little safety margin in case the system works to slow
  %This is a line with al the x value that are in the field
-global x y k d z zz phicar phitogoal maxfield m dest refsignal refsignalStart lengthV eps;
+global x y k d phicar phitogoal maxfield m dest refsignal refsignalStart lengthV eps;
+load('SingleReference.mat');
 for j = 1:size(destination,1)
     if(destination(j,1) == 0 && destination(j,2) == 0)
         j = j-1;
@@ -12,8 +13,6 @@ for j = 1:size(destination,1)
 end
 dest = destination(1:j,:);
 maxfield = 460;
-z = 0;
-zz = 0;
 x = zeros(1000,1);
 x(1) = startx;
 y = zeros(1000,1);
@@ -23,14 +22,14 @@ k = 1; %This is a loop paramater to store the driven directory
 m = 1; %This is the loop parameter to indicate the current goal
 x_des = linspace(0,maxfield);
 updatelocation(dest(m,1), dest(m,2),0);
-phicar = phicarstart;
+phicar(k) = phicarstart;
 
 
 %% Student Group Data
 Group = 'B10';
 B = 'B4000';        %% Bit frequency;           %Standard: B5000
 F = 'F12000';       %% Carrier frequency        %Standard: F10000
-R = 'R1500';        %% Repitition Count         %Standard: R2500
+R = 'R1000';        %% Repitition Count         %Standard: R2500
 C = 'C0xD1485066';   %% Audio code               %Standard: C0xaa55aa55
 
 %% Set-up Car
@@ -51,7 +50,7 @@ while((size(dest,1) - m) ~= 0)
     A = [abs(phigoaltosecondgoal - phimiddlecarsecondgoal + pi), abs(phigoaltosecondgoal - phimiddlecarsecondgoal), abs(phigoaltosecondgoal - phimiddlecarsecondgoal - pi) ; (phigoaltosecondgoal - phimiddlecarsecondgoal + pi) ,(phigoaltosecondgoal - phimiddlecarsecondgoal),(phigoaltosecondgoal - phimiddlecarsecondgoal - pi)]; 
     [~,c] = min(A(1,:));
     refline = A(2,c);
-    Acq_data = pa_wavrecord(1,nmics,T_meas*Fs,Fs);
+    %Acq_data = pa_wavrecord(1,nmics,T_meas*Fs,Fs);
     if(phitosecond > pi/2)
         if(y(k) > dest(m,1))
           refline = -refline;
@@ -59,7 +58,7 @@ while((size(dest,1) - m) ~= 0)
         grade_desired = tan(refline);
         if(grade_desired > 10^-10 && grade_desired < 10^10)
             y_desired = dest(m,2) + grade_desired*(x_des - dest(m,1)); 
-            grade_car = tan(phicar);
+            grade_car = tan(phicar(k));
             y_car = y(k) + grade_car * (x_des - x(k)); 
             x_intersection = polyxpoly(x_des, y_desired, x_des, y_car);
             if ~isempty(x_intersection)

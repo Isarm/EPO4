@@ -1,11 +1,10 @@
 function [x,y] = localization_driving(refsignal, refsignalStart,lengthV,Tr, Fs,mic,mic3D, Acq_data,eps)
  clear h3;  
- load('reference(5=1).mat')
 for(n=1:5)
         % generate the channel estimations
         % replace with own channel estimations
         % h2(:,i) = ch2(refsignal(refsignalStart(i):refsignalStop(i),i),Acq_data(:,i),length(Acq_data(:,i)));
-        h3(:,n) = ch3(refsignal(refsignalStart(n):refsignalStart(n)+lengthV(n),n),Acq_data(:,n), eps(n));
+        h3(:,n) = ch3(refsignal(refsignalStart:refsignalStart+lengthV),Acq_data(:,n), eps);
     end
     g=2;
     j = 1;
@@ -18,7 +17,7 @@ for(n=1:5)
         end
         g = g+1;
     end
-    [~,~,BeaconLocMeas3D] = localization_5_3D(340*TDOAv,transpose(mic),transpose(mic3D));
+    [~,~,BeaconLocMeas3D] = localization_5_3D(343*TDOAv,transpose(mic),transpose(mic3D));
     x = BeaconLocMeas3D(1)
     y = BeaconLocMeas3D(2)
 end

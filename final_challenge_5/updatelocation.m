@@ -7,13 +7,9 @@ mic3D = [2.3, -2.3,0.5; -2.3, -2.3,0.5; -2.3, 2.3,0.5; 2.3, 2.3,0.5; 0, 2.3,0.8]
 nmics = 5;
 T_meas = 2*1000/4000;  
 o = 0; 
-n = 0;
 Max_try = 5; %Maximum tries before the error will be accepted.
 error_read = zeros(Max_try,2);
-
-location_error_in_error = 10; %Maxium allowed distance if multiple measurements are done
-dist_between_points = 40; %Maximum allowed distance between two measured points allowed (after driving)
-Max_try = 5; %Maximum tries before the error will be accepted.
+dist_between_points = 30; %Maximum allowed distance between two measured points allowed (after driving)
 
 
 %Gathering new x(k) and y(k)

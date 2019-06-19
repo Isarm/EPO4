@@ -252,7 +252,6 @@ intery2 = str2double(get(handles.intery2, 'string'));
 interx3 = str2double(get(handles.interx3, 'string'));
 intery3 = str2double(get(handles.intery3, 'string'));
 
-coor
 %A while loop is made and waiting for the enter
 while(1)
     start = get(gcf,'currentkey'); %Start will get the value of the last pushed keyboard button

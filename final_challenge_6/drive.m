@@ -15,7 +15,7 @@ while(d(k) > 30)
     %Send steering signals
     if 0.15 < phi(k) && phi(k) < 0.35  %~5 graden  Minimale angle voordat ie gaat sturen
         EPOCommunications('transmit','D170')
-        q = 1;
+        q = 2;
         %phicar(k+1) = phicar - softturn;
     elseif phi(k) > 0.35 % ~20 graden
         EPOCommunications('transmit','D200')

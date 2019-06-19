@@ -1,9 +1,9 @@
 function drive2(destination, phicarstart, startx, starty)
-edgetresh =  60;
+edgetresh =  40;
 r = 50; %Boogstraal van de auto wanneer hij maximaal stuurt in cm
 %tolinemargin = 5; %Little safety margin in case the system works to slow
  %This is a line with al the x value that are in the field
-global x y k d phicar phitogoal maxfield m dest refsignal refsignalStart lengthV eps;
+global x y k d phicar maxfield m dest refsignal refsignalStart lengthV eps;
 load('SingleReference.mat');
 for j = 1:size(destination,1)
     if(destination(j,1) == 0 && destination(j,2) == 0)
@@ -45,18 +45,17 @@ while((size(dest,1) - m) ~= 0)
     EPOCommunications('transmit', 'D150')
     phitosecond = angle3points(x(k), y(k), dest(m+1,1), dest(m+1,2), dest(m,1), dest(m,2));
     %        refline = phitosecond /2 + phigoaltosecondgoal(x(k), y(k), maxfield, dest(m,2), dest(m,1), dest(m,2));
-    phigoaltosecondgoal = atan2(dest(m+1,2) - dest(m,2), dest(m+1,1) - dest(m,1));
-    phimiddlecarsecondgoal = phigoaltosecondgoal/2 + phitogoal/2;
-    A = [abs(phigoaltosecondgoal - phimiddlecarsecondgoal + pi), abs(phigoaltosecondgoal - phimiddlecarsecondgoal), abs(phigoaltosecondgoal - phimiddlecarsecondgoal - pi) ; (phigoaltosecondgoal - phimiddlecarsecondgoal + pi) ,(phigoaltosecondgoal - phimiddlecarsecondgoal),(phigoaltosecondgoal - phimiddlecarsecondgoal - pi)]; 
-    [~,c] = min(A(1,:));
-    refline = A(2,c);
+    phigoaltosecondgoal = atan2(dest(m+1,2) - dest(m,2), dest(m+1,1) - dest(m,1)); phigoaltocar = atan2(y(k) - dest(m,2), x(k) - dest(m,1));
+    refline = phigoaltosecondgoal/2 + phigoaltocar/2;
+    if(abs(phigoaltosecondgoal - phigoaltocar) > pi)
+        B = [abs(refline + pi), abs(refline - pi); refline + pi, refline - pi];
+        [~,b] = min(B(1,:));
+        refline = B(2,b);
+    end    
     %Acq_data = pa_wavrecord(1,nmics,T_meas*Fs,Fs);
-    if(phitosecond > pi/2)
-        if(y(k) > dest(m,1))
-          refline = -refline;
-        end
-        grade_desired = tan(refline);
-        if(grade_desired > 10^-10 && grade_desired < 10^10)
+    if(phitosecond > pi/2 && phitosecond ~= pi)
+        grade_desired = tan(refline+pi/2);
+        if(abs(grade_desired) > 10^-10 && abs(grade_desired < 10^10))
             y_desired = dest(m,2) + grade_desired*(x_des - dest(m,1)); 
             grade_car = tan(phicar(k));
             y_car = y(k) + grade_car * (x_des - x(k)); 
@@ -64,14 +63,15 @@ while((size(dest,1) - m) ~= 0)
             if ~isempty(x_intersection)
                 y_intersection = dest(m,2) + grade_desired*(x_intersection - dest(m,1));    
                 if(edgetresh < x_intersection && x_intersection < (maxfield - edgetresh) && edgetresh < y_intersection && y_intersection < (maxfield - edgetresh))
+                if(min(dest(m,1),x(k))-5 <= x_intersection && x_intersection <= max(dest(m,1),x(k)) + 5 && min(dest(m,2),y(k)) - 5 <= y_intersection && y_intersection <= max(dest(m,2),y(k))+ 5)    
                     drive(x_intersection, y_intersection)
+                end
                 end
             end
         end
         drive(dest(m,1),dest(m,2));
     elseif(phitosecond <= pi/2) %Note that the box of the last challenge can be on one of this radii and then you're screwed so you must be able to find a way past that in some way.
         if(d(k) > 3*r)
-            refline = -refline; %NOTE: Is alleen goed in enkel geval
                 r3radius1_x =  dest(m,1) + 3 * r * cos(refline + pi/2);
                 r3radius1_y =  dest(m,2) + 3 * r * sin(refline + pi/2);
                 r3radius2_x =  dest(m,1) + 3 * r * cos(refline - pi/2);
@@ -110,33 +110,4 @@ drive(dest(m,1), dest(m,2)); %This is the drive to the finish
 disp('Reached Final Destination')
 end
 
-%{
-function drive()
-    global x y k d m phicar phitogoal dest;
-    while(d(k) > 30)
-        %Correct steering - if you don't correct steering the car may choose to
-        %take a lager corner for instance 1.8pi instead of 0.2pi. Therefore you
-        %have to extend the circle so that it can choose the shortest corner.
-        Phi_nocorrection = phitogoal - phicar; % Difference in angle (positive stering to the left is needed and negative correcting by steering right is needed
-        A = [abs(Phi_nocorrection) abs(Phi_nocorrection + 2*pi) abs(Phi_nocorrection - 2*pi); Phi_nocorrection, (Phi_nocorrection + 2*pi), (Phi_nocorrection - 2*pi)];
-        [~,c] = min(A(1,:));
-        phi = A(2,c); %So it takes the angle with the absolute minimum value, but with this rule it keeps the sign of the value which is needed to know whether you must steer to the right or to the left.
 
-        %Send steering signals
-            %Minimale angle voordat ie gaat sturen
-        if 0.15 > phi && phi < 0.35  %~5 graden 
-            EPOCommunications('transmit','D180')
-        elseif phi > 0.35 % ~20 graden
-            EPOCommunications('transmit','D200')
-        elseif phi < -0.15 && phi > -0.35 %Minimale angle voordat ie gaat sturen
-            EPOCommunications('transmit','D120')
-        elseif phi < -0.35 %Minimale angle voordat ie gaat sturen
-            EPOCommunications('transmit','D100') 
-        else
-            EPOCommunications('transmit','D150')
-        end
-        updatelocation();    
-    end
-    EPOCommunications('transmit', 'M150')
-end
-%}

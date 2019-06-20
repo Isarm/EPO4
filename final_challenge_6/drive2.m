@@ -81,7 +81,7 @@ while((size(dest,1) - m) ~= 0)
                 if(d_3_radius1 < d_3_radius2 && edgetresh < r3radius1_x && r3radius1_x < (maxfield - edgetresh) && edgetresh < r3radius1_y && r3radius1_y < (maxfield - edgetresh) )  
                     drive(r3radius1_x, r3radius1_y) %Has to drive to radius 1.
                     updatelocation(dest(m,1),dest(m,2),0);
-                elseif(edgetresh < r3radius2_x && r3radius2_x < (maxfield - edgetresh) && edgetresh < r3radius2_y && r3radius2_y < (maxfield - edgetresh))
+                elseif(d_3_radius1 > d_3_radius2 && edgetresh < r3radius2_x && r3radius2_x < (maxfield - edgetresh) && edgetresh < r3radius2_y && r3radius2_y < (maxfield - edgetresh))
                     drive(r3radius2_x, r3radius2_y) %Has to drive to radius 2.
                     updatelocation(dest(m,1),dest(m,2),0);
                 end
@@ -95,7 +95,7 @@ while((size(dest,1) - m) ~= 0)
                 d_1_5_radius2 = sqrt((r1_5radius2_x - x(k))^2 + (r1_5radius2_y - y(k))^2);
                 if(d_1_5_radius1 < d_1_5_radius2 && edgetresh < r1_5radius1_x && r1_5radius1_x < maxfield - edgetresh && edgetresh < r1_5radius1_y && r1_5radius1_y < (maxfield - edgetresh))
                     drive(r1_5radius1_x, r1_5radius1_y) %Has to drive to radius 1
-                elseif(edgetresh < r1_5radius2_x && r1_5radius2_x < (maxfield - edgetresh) && edgetresh < r1_5radius2_y && r1_5radius2_y < (maxfield - edgetresh))
+                elseif(d_1_5_radius1 > d_1_5_radius2 && edgetresh < r1_5radius2_x && r1_5radius2_x < (maxfield - edgetresh) && edgetresh < r1_5radius2_y && r1_5radius2_y < (maxfield - edgetresh))
                     drive(r1_5radius2_x, r1_5radius2_y) %Has to drive to radius 2.
                 end
         end
